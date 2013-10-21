@@ -12,7 +12,7 @@ import java.util.Random;
  * To change this template use File | Settings | File Templates.
  */
 public class SA {
-    private Board board;
+    private Board node;
     private float temp;
     private float td;
     private float prop;
@@ -25,9 +25,7 @@ public class SA {
 
     private int optimalNumberOfEggs;
 
-    private static float objectiveFunction(Board board){
-        return 0;
-    }
+
 
     private static float recalculateTemp(float t, float dt){
         return t-dt;
@@ -37,24 +35,24 @@ public class SA {
         this.boardX = boardX;
         this.boardY = boardY;
         this.numberOfEggs = numberOfEggs;
-        this.board = this.generateBoard(); //Generate startboard
+        this.node = new Board(5,5); //Generate startboard
         this.temp = 1; //Choose a propper starting value
         this.optimalNumberOfEggs = boardX*numberOfEggs;   //This will only work for quadratick boards.
 
     }
 
     public static void main(String[] args){
-        SA sa = new SA();
+        SA sa = new SA(5,5,2);
 
-        sa.currentBoardObjectiveValue = objectiveFunction(sa.board);
-        while (objectiveFunction(sa.board)<sa.targetValue && sa.temp > 0){
-            Board neighbour = sa.board.generateNeighbors();
-            float neighbourValue = objectiveFunction(neighbour);
+        sa.currentBoardObjectiveValue = Board.objectiveFunction(sa.node);
+        while (Board.objectiveFunction(sa.node)<sa.targetValue && sa.temp > 0){
+            Board neighbour = sa.node.generateNeighbors();
+            float neighbourValue = Board.objectiveFunction(neighbour);
             float q = ((sa.currentBoardObjectiveValue-neighbourValue)/neighbourValue);
             double currentP = Math.min(1,(Math.exp((-q/sa.temp))));
             double randX = Math.random(); //Does not allow the number 1 to be chosen, but a number almost infinitly close will be possible.
             if (randX > currentP){
-                sa.board = neighbour;
+                sa.node = neighbour;
             }
             sa.temp = recalculateTemp(sa.temp, sa.td);
 
