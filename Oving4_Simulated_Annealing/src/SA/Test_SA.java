@@ -11,19 +11,19 @@ import java.util.Arrays;
 public class Test_SA {
 
 	public static void main(String[] args){
-		Board board = new Board(5,5);
+		Board board = new Board(5,5,2);
 		ArrayList<Boolean> row = new ArrayList<Boolean>();
 		row.add(false);
 		row.add(false);
 		row.add(true);
-		row.add(true);
+		row.add(false);
 		row.add(false);
 		board.getBoard().set(1, row);
 
 		ArrayList<Boolean> row1 = new ArrayList<Boolean>();
-		row1.add(false);
-		row1.add(false);
 		row1.add(true);
+		row1.add(false);
+		row1.add(false);
 		row1.add(false);
 		row1.add(true);
 		board.getBoard().set(2, row1);
@@ -31,14 +31,16 @@ public class Test_SA {
 		ArrayList<Boolean> row2 = new ArrayList<Boolean>();
 		row2.add(false);
 		row2.add(false);
-		row2.add(false);
+		row2.add(true);
 		row2.add(false);
 		row2.add(false);
 		board.getBoard().set(3, row2);
 
+		System.out.println("There are # number of eggs: " + board.numberOfEggsInBoard());
 		board.setNumberOfEggsCurrentlyOnBoard(board.numberOfEggsInBoard());
 
-		System.out.println(Board.objectiveFunction(board,2));
+
+		System.out.println("Score: " + Board.objectiveFunction(board,2));
 
 
 		System.out.println(board.getBoard());

@@ -13,11 +13,11 @@ import java.util.Random;
 public class Board {
 	private ArrayList<ArrayList<Boolean>> board;
 	private int numberOfEggsCurrentlyOnBoard;
-	private int k;
-	private static int optimalNumberofEggs;
+	public static int k;
+	public static int optimalNumberofEggs;
 
 
-	public Board(int x, int y){
+	public Board(int x, int y, int k){
 		board = new ArrayList<ArrayList<Boolean>>();
 		for (int i = 0; i<x; i++){
 			System.out.println("i:" + i);
@@ -28,14 +28,16 @@ public class Board {
 			}
 		}
 		this.numberOfEggsCurrentlyOnBoard = numberOfEggsInBoard();
+		//this.optimalNumberofEggs = board.size()*k;
+		//this.k = k;
 
 	}
 
 	public Board(ArrayList<ArrayList<Boolean>> board, int k ){
 		this.board = (ArrayList<ArrayList<Boolean>>) board.clone();
 		this.numberOfEggsCurrentlyOnBoard = numberOfEggsInBoard();
-		this.k = k;
-		this.optimalNumberofEggs = board.size()*k;   //This will only work for quadratick boards.
+		//this.k = k;
+		//this.optimalNumberofEggs = this.board.size()*k;   //This will only work for quadratick boards.
 	}
 
 
@@ -60,7 +62,9 @@ public class Board {
 
 
 	private ArrayList<ArrayList<Boolean>> addEgg(){
-
+		if (this.numberOfEggsCurrentlyOnBoard == this.board.size()*this.board.size()){
+			return board;
+		}
 		while (true){
 			int newX = (int) (Math.random() * board.size());
 			int newY = (int) (Math.random() * board.get(newX).size());
@@ -98,8 +102,8 @@ public class Board {
 	}
 
 	private ArrayList<ArrayList<Boolean>> moveEgg(){
-		if (this.numberOfEggsCurrentlyOnBoard == 0){
-			System.out.println("This board has no eggs. No egg to move");
+		if (this.numberOfEggsCurrentlyOnBoard == 0 || (this.numberOfEggsCurrentlyOnBoard == this.board.size()*this.board.size())){
+			//System.out.println("This board has no eggs. No egg to move");
 			return board;
 		}
 		ArrayList<ArrayList<Boolean>> newBoard = new ArrayList<ArrayList<Boolean>>();
@@ -109,7 +113,7 @@ public class Board {
 			Random random = new Random();
 			//Insert egg at random empty space
 			if ((board.get(newX).get(newY))){
-				System.out.println("Found an egg to move at" + newX + newY);
+				//System.out.println("Found an egg to move at" + newX + newY);
 				int deltaX = random.nextInt(3)-1;
 				int deltaY = random.nextInt(3)-1;
 				if (checkLeagality(newX, newY, deltaX, deltaY)){
@@ -130,8 +134,8 @@ public class Board {
 	}
 
 	private boolean checkLeagality(int x, int y, int dx, int dy){
-		System.out.println("checkLegality");
-		System.out.println("Attempting to move egg" + dx + " " + dy);
+		//System.out.println("checkLegality");
+		//System.out.println("Attempting to move egg" + dx + " " + dy);
 		if (x+dx < 0 || x+dx > board.size()-1){
 			return false;
 		}
@@ -157,12 +161,12 @@ public class Board {
 		if (numberOfErrors > 0){
 			//There are errors. We award no more than a score of 0.5
 			score = 0.5;
-			score -= 0.5*numberOfErrors/possibleNumberOfErrors(node);
+			score -= 0.5*((double)numberOfErrors/(double)possibleNumberOfErrors(node));
 		}
 		else{
 			//There are no errors. We award a score of no less than 0.5
 			score = 0.5;
-			score += 0.5*(node.numberOfEggsCurrentlyOnBoard/optimalNumberofEggs);
+			score += 0.5*((double)node.numberOfEggsCurrentlyOnBoard/(double)optimalNumberofEggs);
 		}
 		return score;
 	}
@@ -174,7 +178,7 @@ public class Board {
 	}
 
 	private static int diagonalErrors(Board node, int numberOfEggs){
-		System.out.println("Checking for diagonal errors");
+		//System.out.println("Checking for diagonal errors");
 		int errorSum = 0;
 		int diag1Eggs;
 		int diag2Eggs;
@@ -212,7 +216,7 @@ public class Board {
 	}
 
 	private static int horizontalErrors(Board node, int numberOfEggs){
-		System.out.println("Checking for horizontal errors");
+		//System.out.println("Checking for horizontal errors");
 		 int errorSum = 0;
 		 for (int i = 0; i<node.getBoard().size(); i++){
 			 ArrayList<Boolean> row = node.getBoard().get(i);
@@ -232,7 +236,7 @@ public class Board {
 	}
 
 	private static int verticalErrors(Board node, int numberOfEggs){
-		System.out.println("Checking for vertical errors");
+		//System.out.println("Checking for vertical errors");
 		int errorSum = 0;
 		for (int i = 0; i<node.getBoard().size(); i++){
 			int columnError = 0;
@@ -266,7 +270,7 @@ public class Board {
 	}
 
 	public static int possibleNumberOfErrors(Board node){
-		return node.getBoard().size()*2 + (node.getBoard().size() - 3)*2 - (node.getK() -1)*2;
+		return node.getBoard().size()*2 + (node.getBoard().size() - 1)*2 - (node.getK() -1)*4;
 	}
 
 	public void setNumberOfEggsCurrentlyOnBoard(int n){
