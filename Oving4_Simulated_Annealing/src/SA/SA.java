@@ -17,7 +17,7 @@ public class SA {
     private float td;
     private float prop;
     private float targetValue;
-    private float currentBoardObjectiveValue;
+    private double currentBoardObjectiveValue;
 
     private int boardX;
     private int boardY;
@@ -37,7 +37,7 @@ public class SA {
         this.numberOfEggs = numberOfEggs;
         this.node = new Board(5,5); //Generate startboard
         this.temp = 1; //Choose a propper starting value
-        this.optimalNumberOfEggs = boardX*numberOfEggs;   //This will only work for quadratick boards.
+
 
     }
 
@@ -47,8 +47,8 @@ public class SA {
         sa.currentBoardObjectiveValue = Board.objectiveFunction(sa.node, sa.numberOfEggs);
         while (Board.objectiveFunction(sa.node, sa.numberOfEggs)<sa.targetValue && sa.temp > 0){
             Board neighbour = sa.node.generateNeighbors();
-            float neighbourValue = Board.objectiveFunction(neighbour, sa.numberOfEggs);
-            float q = ((sa.currentBoardObjectiveValue-neighbourValue)/neighbourValue);
+            double neighbourValue = Board.objectiveFunction(neighbour, sa.numberOfEggs);
+            double q = ((sa.currentBoardObjectiveValue-neighbourValue)/neighbourValue);
             double currentP = Math.min(1,(Math.exp((-q/sa.temp))));
             double randX = Math.random(); //Does not allow the number 1 to be chosen, but a number almost infinitly close will be possible.
             if (randX > currentP){

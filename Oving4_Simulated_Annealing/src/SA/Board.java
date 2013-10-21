@@ -13,7 +13,8 @@ import java.util.Random;
 public class Board {
 	private ArrayList<ArrayList<Boolean>> board;
 	private int numberOfEggsCurrentlyOnBoard;
-
+	private int k;
+	private static int optimalNumberofEggs;
 
 
 	public Board(int x, int y){
@@ -30,9 +31,11 @@ public class Board {
 
 	}
 
-	public Board(ArrayList<ArrayList<Boolean>> board){
-		 this.board = (ArrayList<ArrayList<Boolean>>) board.clone();
+	public Board(ArrayList<ArrayList<Boolean>> board, int k ){
+		this.board = (ArrayList<ArrayList<Boolean>>) board.clone();
 		this.numberOfEggsCurrentlyOnBoard = numberOfEggsInBoard();
+		this.k = k;
+		this.optimalNumberofEggs = board.size()*k;   //This will only work for quadratick boards.
 	}
 
 
@@ -43,13 +46,13 @@ public class Board {
 		switch (Choice){
 			case 0 :
 				System.out.println("AddEgg");
-				return new Board(addEgg());
+				return new Board(addEgg(), k);
 			case 1 :
 				System.out.println("RemoveEgg");
-				return new Board(removeEgg());
+				return new Board(removeEgg(), k);
 			case 2 :
 				System.out.println("MoveEgg");
-				return new Board(moveEgg());
+				return new Board(moveEgg(), k);
 			default:
 				return null;
 		}
@@ -96,6 +99,7 @@ public class Board {
 
 	private ArrayList<ArrayList<Boolean>> moveEgg(){
 		if (this.numberOfEggsCurrentlyOnBoard == 0){
+			System.out.println("This board has no eggs. No egg to move");
 			return board;
 		}
 		ArrayList<ArrayList<Boolean>> newBoard = new ArrayList<ArrayList<Boolean>>();
@@ -147,9 +151,20 @@ public class Board {
 		return this.board;
 	}
 
-	public static float objectiveFunction(Board node, int numberOfEggs){
-		numberOfErrors(node, numberOfEggs);
-		return 0;
+	public static double objectiveFunction(Board node, int numberOfEggs){
+		int numberOfErrors = numberOfErrors(node, numberOfEggs);
+		double score;
+		if (numberOfErrors > 0){
+			//There are errors. We award no more than a score of 0.5
+			score = 0.5;
+			score -= 0.5*numberOfErrors/possibleNumberOfErrors(node);
+		}
+		else{
+			//There are no errors. We award a score of no less than 0.5
+			score = 0.5;
+			score += 0.5*(node.numberOfEggsCurrentlyOnBoard/optimalNumberofEggs);
+		}
+		return score;
 	}
 
 	private static int numberOfErrors(Board node, int numberOfEggs){
@@ -159,10 +174,45 @@ public class Board {
 	}
 
 	private static int diagonalErrors(Board node, int numberOfEggs){
-		return 0;
+		System.out.println("Checking for diagonal errors");
+		int errorSum = 0;
+		int diag1Eggs;
+		int diag2Eggs;
+		for (int i = -(node.getBoard().size()+1); i<node.getBoard().size(); i++){
+			diag1Eggs = 0;
+			diag2Eggs = 0;
+			for (int j = 0; j<node.getBoard().size()-Math.abs(i); j++){
+
+				if (i<0 && node.getBoard().get(Math.abs(i)+j).get(j)){
+					diag1Eggs ++;
+				}
+				else if (i>=0 && node.getBoard().get(j).get(i+j)){
+					diag1Eggs++;
+				}
+
+				if (i<0 && node.getBoard().get(Math.abs(i)+j).get(node.getBoard().size()-1-j)){
+					diag2Eggs ++;
+				}
+				else if (i>=0 && node.getBoard().get(j).get(node.getBoard().size()-1 - (i + j))){
+					diag2Eggs++;
+				}
+
+
+
+			}
+			if (diag1Eggs > numberOfEggs){
+				errorSum++;
+			}
+			if (diag2Eggs > numberOfEggs){
+				errorSum++;
+			}
+		}
+		System.out.println("Diagonal errors found: " + errorSum);
+		return errorSum;
 	}
 
 	private static int horizontalErrors(Board node, int numberOfEggs){
+		System.out.println("Checking for horizontal errors");
 		 int errorSum = 0;
 		 for (int i = 0; i<node.getBoard().size(); i++){
 			 ArrayList<Boolean> row = node.getBoard().get(i);
@@ -172,13 +222,17 @@ public class Board {
 					 rowSum++;
 				 }
 			 }
-			 errorSum += rowSum;
+			 if (rowSum > numberOfEggs){
+				errorSum++;
+			 }
 		 }
-		 return errorSum;
+		System.out.println("Horizontal errors found: " + errorSum);
+		return errorSum;
 
 	}
 
 	private static int verticalErrors(Board node, int numberOfEggs){
+		System.out.println("Checking for vertical errors");
 		int errorSum = 0;
 		for (int i = 0; i<node.getBoard().size(); i++){
 			int columnError = 0;
@@ -187,8 +241,11 @@ public class Board {
 				   columnError++;
 				}
 			}
-			errorSum += columnError;
+			if (columnError > numberOfEggs){
+				errorSum++;
+			}
 		}
+		System.out.println("Vertical errors found: " + errorSum);
 		return errorSum;
 	}
 
@@ -204,5 +261,16 @@ public class Board {
 		return numberOfEggs;
 	}
 
+	public int getK(){
+		return k;
+	}
+
+	public static int possibleNumberOfErrors(Board node){
+		return node.getBoard().size()*2 + (node.getBoard().size() - 3)*2 - (node.getK() -1)*2;
+	}
+
+	public void setNumberOfEggsCurrentlyOnBoard(int n){
+		this.numberOfEggsCurrentlyOnBoard = n;
+	}
 }
 
