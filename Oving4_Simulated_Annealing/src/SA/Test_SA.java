@@ -15,12 +15,14 @@ public class Test_SA {
 		ArrayList<Boolean> row = new ArrayList<Boolean>();
 		row.add(false);
 		row.add(false);
-		row.add(true);
+		row.add(false);
 		row.add(false);
 		row.add(false);
 		board.getBoard().set(1, row);
 		System.out.println(board.getBoard());
 		board.generateNeighbors();
+		System.out.println(board.numberOfEggsInBoard());
+
 		System.out.println(board.getBoard());
 	}
 

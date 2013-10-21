@@ -44,10 +44,10 @@ public class SA {
     public static void main(String[] args){
         SA sa = new SA(5,5,2);
 
-        sa.currentBoardObjectiveValue = Board.objectiveFunction(sa.node);
-        while (Board.objectiveFunction(sa.node)<sa.targetValue && sa.temp > 0){
+        sa.currentBoardObjectiveValue = Board.objectiveFunction(sa.node, sa.numberOfEggs);
+        while (Board.objectiveFunction(sa.node, sa.numberOfEggs)<sa.targetValue && sa.temp > 0){
             Board neighbour = sa.node.generateNeighbors();
-            float neighbourValue = Board.objectiveFunction(neighbour);
+            float neighbourValue = Board.objectiveFunction(neighbour, sa.numberOfEggs);
             float q = ((sa.currentBoardObjectiveValue-neighbourValue)/neighbourValue);
             double currentP = Math.min(1,(Math.exp((-q/sa.temp))));
             double randX = Math.random(); //Does not allow the number 1 to be chosen, but a number almost infinitly close will be possible.

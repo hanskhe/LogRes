@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public class Board {
 	private ArrayList<ArrayList<Boolean>> board;
-
+	private int numberOfEggsCurrentlyOnBoard;
 
 
 
@@ -26,11 +26,13 @@ public class Board {
 				board.get(i).add(false);
 			}
 		}
+		this.numberOfEggsCurrentlyOnBoard = numberOfEggsInBoard();
 
 	}
 
 	public Board(ArrayList<ArrayList<Boolean>> board){
 		 this.board = (ArrayList<ArrayList<Boolean>>) board.clone();
+		this.numberOfEggsCurrentlyOnBoard = numberOfEggsInBoard();
 	}
 
 
@@ -64,6 +66,7 @@ public class Board {
 				ArrayList<Boolean> temp = board.get(newX);
 				temp.set(newY,true);
 				board.set(newX,temp);
+				this.numberOfEggsCurrentlyOnBoard++;
 				break;
 			}
 		}
@@ -73,6 +76,9 @@ public class Board {
 	}
 
 	private ArrayList<ArrayList<Boolean>> removeEgg(){
+		if (this.numberOfEggsCurrentlyOnBoard == 0){
+			return board;
+		}
 		while (true){
 			int newX = (int) (Math.random() * board.size());
 			int newY = (int) (Math.random() * board.get(newX).size());
@@ -81,6 +87,7 @@ public class Board {
 				ArrayList<Boolean> temp = board.get(newX);
 				temp.set(newY,false);
 				board.set(newX,temp);
+				this.numberOfEggsCurrentlyOnBoard--;
 				break;
 			}
 		}
@@ -88,6 +95,9 @@ public class Board {
 	}
 
 	private ArrayList<ArrayList<Boolean>> moveEgg(){
+		if (this.numberOfEggsCurrentlyOnBoard == 0){
+			return board;
+		}
 		ArrayList<ArrayList<Boolean>> newBoard = new ArrayList<ArrayList<Boolean>>();
 		while (true){
 			int newX = (int) (Math.random() * board.size());
@@ -137,8 +147,61 @@ public class Board {
 		return this.board;
 	}
 
-	public static float objectiveFunction(Board node){
+	public static float objectiveFunction(Board node, int numberOfEggs){
+		numberOfErrors(node, numberOfEggs);
 		return 0;
+	}
+
+	private static int numberOfErrors(Board node, int numberOfEggs){
+		int errors = 0;
+		errors += diagonalErrors(node, numberOfEggs) + horizontalErrors(node, numberOfEggs) + verticalErrors(node, numberOfEggs);
+		return errors;
+	}
+
+	private static int diagonalErrors(Board node, int numberOfEggs){
+		return 0;
+	}
+
+	private static int horizontalErrors(Board node, int numberOfEggs){
+		 int errorSum = 0;
+		 for (int i = 0; i<node.getBoard().size(); i++){
+			 ArrayList<Boolean> row = node.getBoard().get(i);
+			 int rowSum = 0;
+			 for (int j = 0; j<row.size(); j++){
+				 if (row.get(j)){
+					 rowSum++;
+				 }
+			 }
+			 errorSum += rowSum;
+		 }
+		 return errorSum;
+
+	}
+
+	private static int verticalErrors(Board node, int numberOfEggs){
+		int errorSum = 0;
+		for (int i = 0; i<node.getBoard().size(); i++){
+			int columnError = 0;
+			for (int j = 0; j<node.getBoard().size(); j++){
+				if (node.getBoard().get(j).get(i)){
+				   columnError++;
+				}
+			}
+			errorSum += columnError;
+		}
+		return errorSum;
+	}
+
+	public int numberOfEggsInBoard(){
+	   int numberOfEggs = 0;
+		for (int i = 0; i<board.size(); i++){
+			for (int j = 0; j<board.size(); j++){
+				if (board.get(i).get(j)){
+					numberOfEggs++;
+				}
+			}
+		}
+		return numberOfEggs;
 	}
 
 }
