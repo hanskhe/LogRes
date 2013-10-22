@@ -34,7 +34,15 @@ public class Board {
 	}
 
 	public Board(ArrayList<ArrayList<Boolean>> board, int k ){
-		this.board = (ArrayList<ArrayList<Boolean>>) board.clone();
+		this.board = new ArrayList<ArrayList<Boolean>>();
+		for (int i = 0; i<board.size();i++){
+			ArrayList<Boolean> row = new ArrayList<Boolean>();
+			for (int j = 0; j<board.size();j++){
+				row.add(board.get(i).get(j));
+			}
+			this.board.add(row);
+		}
+		//this.board = (ArrayList<ArrayList<Boolean>>) board.clone();
 		this.numberOfEggsCurrentlyOnBoard = numberOfEggsInBoard();
 		//this.k = k;
 		//this.optimalNumberofEggs = this.board.size()*k;   //This will only work for quadratick boards.
@@ -168,6 +176,7 @@ public class Board {
 			score = 0.5;
 			score += 0.5*((double)node.numberOfEggsCurrentlyOnBoard/(double)optimalNumberofEggs);
 		}
+		//System.out.println("NeighborValue from Board: " + score);
 		return score;
 	}
 
